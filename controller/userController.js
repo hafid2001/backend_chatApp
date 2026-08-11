@@ -1,10 +1,8 @@
 import { error } from "node:console";
-import { generateToken } from "../lib/utils";
-import user from "../models/User";
+import {generateToken} from "../lib/utils.js"
+import user from "../models/User.js";
 import bcrypt from "bcryptjs";
-import { flushCompileCache } from "node:module";
-import { use } from "react";
-import cloudinary from "../lib/cloudinary";
+import cloudinary from "../lib/cloudinary.js"
 //signup a new user
 
 export const signup = async (req, res) => {
@@ -59,6 +57,10 @@ export const Login = async (req, res) => {
     res.json({ succes: false, message: error.message });
   }
 };
+
+
+
+
 //Controller to update user  profile details 
 export const updateProlfile = async (req,res) => {
   try{

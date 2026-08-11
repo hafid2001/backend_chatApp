@@ -1,4 +1,4 @@
-import User from "../models/User";
+import User from "../models/User.js";
 import Jwt  from "jsonwebtoken";
 
 
@@ -20,3 +20,8 @@ export const protectRoute = async (req, res, next) => {
     res.json({ succes: false, message: "error.message" });
   }
 };
+//Controller to check if user is authenticated 
+
+export const checkAuth = async(req,res)=>{
+  res.json({succes:true , user: req.user});
+}
