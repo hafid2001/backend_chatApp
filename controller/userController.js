@@ -2,6 +2,8 @@ import { error } from "node:console";
 import { generateToken } from "../lib/utils";
 import user from "../models/User";
 import bcrypt from "bcryptjs";
+import { flushCompileCache } from "node:module";
+import { use } from "react";
 
 //signup a new user
 
@@ -32,6 +34,32 @@ const token = generateToken(newUser);
     console.log(error.message);
     res.json({succes:false,message:error.message})
   }
+
+}
+
+// Login 
+
+export const Login = async  (req,res)=>{
+try {
+  const {email,passwrod}=req.body;
+  const userData = await User.findOne({email});
+
+  const isPasswordCorrect = await bcrypt.compare(passwrod,userData.passwrod);
+
+  if(!isPasswordCorrect){
+    return res.json({succes:false , mesage:"Invalid credentials"});
+
+  }
+  const token = generateToken(userData._id);
+     res.json({succes: true , userData ,token,mesaage:"Login successfully"});
+
+
+}catch(eror){
+    console.log(error.message);
+    res.json({succes:false,message:error.message})
+  }
+
+
 
 
 
