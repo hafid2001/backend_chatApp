@@ -4,7 +4,7 @@ import user from "../models/User";
 import bcrypt from "bcryptjs";
 import { flushCompileCache } from "node:module";
 import { use } from "react";
-
+import cloudinary from "../lib/cloudinary";
 //signup a new user
 
 export const signup = async (req, res) => {
@@ -59,3 +59,29 @@ export const Login = async (req, res) => {
     res.json({ succes: false, message: error.message });
   }
 };
+//Controller to update user  profile details 
+export const updateProlfile = async (req,res) => {
+  try{
+    const { profilePic,bio,fullName} = req.body;
+    const userId = req.user._id;
+    let updateUser;
+     
+    if(!profilePic){
+      updateuser = await User.findByIdUdpate(userId,{bio,fullName},
+      {new : true});
+
+     
+    }else{
+      const upload = await cloudinary.uploader.upload(profilePic);
+
+      updateUser = await User.findByIdAndUdpate(userId,{profilePic:upload.secure_url,bio,fullName},{new : true});
+    }
+    res.json({succes : true, user : updateUser})
+ 
+  }catch (error){
+    console.log(error.mesaage);
+    res.json({succes : false , mesaage : error.mesaage});
+
+  }
+  
+}
