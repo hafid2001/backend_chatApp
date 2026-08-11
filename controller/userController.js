@@ -1,8 +1,8 @@
 import { error } from "node:console";
-import {generateToken} from "../lib/utils.js"
+import { generateToken } from "../lib/utils.js";
 import user from "../models/User.js";
 import bcrypt from "bcryptjs";
-import cloudinary from "../lib/cloudinary.js"
+import cloudinary from "../lib/cloudinary.js";
 //signup a new user
 
 export const signup = async (req, res) => {
@@ -58,32 +58,31 @@ export const Login = async (req, res) => {
   }
 };
 
-
-
-
-//Controller to update user  profile details 
-export const updateProlfile = async (req,res) => {
-  try{
-    const { profilePic,bio,fullName} = req.body;
+//Controller to update user  profile details
+export const updateProlfile = async (req, res) => {
+  try {
+    const { profilePic, bio, fullName } = req.body;
     const userId = req.user._id;
     let updateUser;
-     
-    if(!profilePic){
-      updateuser = await User.findByIdUdpate(userId,{bio,fullName},
-      {new : true});
 
-     
-    }else{
+    if (!profilePic) {
+      updateuser = await User.findByIdUdpate(
+        userId,
+        { bio, fullName },
+        { new: true },
+      );
+    } else {
       const upload = await cloudinary.uploader.upload(profilePic);
 
-      updateUser = await User.findByIdAndUdpate(userId,{profilePic:upload.secure_url,bio,fullName},{new : true});
+      updateUser = await User.findByIdAndUdpate(
+        userId,
+        { profilePic: upload.secure_url, bio, fullName },
+        { new: true },
+      );
     }
-    res.json({succes : true, user : updateUser})
- 
-  }catch (error){
+    res.json({ succes: true, user: updateUser });
+  } catch (error) {
     console.log(error.mesaage);
-    res.json({succes : false , mesaage : error.mesaage});
-
+    res.json({ succes: false, mesaage: error.mesaage });
   }
-  
-}
+};

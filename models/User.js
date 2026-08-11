@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {  timeStamp } from "node:console";
+import { timeStamp } from "node:console";
 
 const userSchema = new mongoose.Schema(
   {
@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema(
   },
   { timestamp: true },
 );
-
 
 const User = mongoose.model("User", userSchema);
 

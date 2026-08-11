@@ -13,10 +13,10 @@ const server = http.createServer(app);
 //MIddleware setup
 app.use(express.json({ limit: "4mb " }));
 app.use(cors());
- 
+
 //Routes setup
 app.use("/api/status", (req, res) => res.send("server is live"));
-app.use("/api/auth",userRouter);
+app.use("/api/auth", userRouter);
 
 //connection to db
 await connectDB();
