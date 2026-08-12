@@ -1,4 +1,3 @@
-
 import Message from "../models/Message.js";
 import User from "../models/User.js";
 
@@ -31,25 +30,37 @@ export const getUserForSidebar = async (req, res) => {
   }
 };
 //Get all messages for selected user
-export const getMessages = async (req,res)=>{
-try{
-  const {id : selectdUserId } = req.params;
-  const myId = req.user._id;
+export const getMessages = async (req, res) => {
+  try {
+    const { id: selectdUserId } = req.params;
+    const myId = req.user._id;
 
-  const messages = await Message.find({
-    $or :[
-     {senderId : myId : receiverId : selectdUserId},
-     {senderId: selectdUserId,receiverId : myId},
-    ]
-  })
-  await Message.updateMany({senderId: selectdUserId,receiverId:myId},
-  {seen:true});
-  res.json({sucess:true ,messages})
-
-}catch{
-  console.log(error.message);
+    const messages = await Message.find({
+      $or: [
+        { senderId: myId, receiverId: selectdUserId },
+        { senderId: selectdUserId, receiverId: myId },
+      ],
+    });
+    await Message.updateMany(
+      { senderId: selectdUserId, receiverId: myId },
+      { seen: true },
+    );
+    res.json({ sucess: true, messages });
+  } catch {
+    console.log(error.message);
     res.json({ sucess: false, message: error.message });
-}
+  }
+};
 
+//api tomark message as seen using message id
 
-}
+export const markMessageAsseen = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Message.findByIdAndUpdate(id, { seen: true });
+    res.json({ sucess: true });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ sucess: false, message: error.message });
+  }
+};
