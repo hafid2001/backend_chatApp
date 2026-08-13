@@ -1,73 +1,77 @@
-import { error } from "node:console";
 import { generateToken } from "../lib/utils.js";
-import user from "../models/User.js";
+import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
-
-//signup a new user
+// signup a new user
 
 export const signup = async (req, res) => {
-  const { fullName, email, passwrod, bio } = req.body;
+  const { fullName, email, password, bio } = req.body;
 
   try {
-    if (!fullName || !email || !passwrod || !bio) {
-      return res.json({ succes: false, message: "Missing details" });
+    if (!fullName || !email || !password || !bio) {
+      return res.json({ success: false, message: "Missing details" });
     }
     const user = await User.findOne({ email });
     if (user) {
-      return res.json({ success: flase, message: " Account already exists" });
+      return res.json({ success: false, message: "Account already exists" });
     }
     const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(passwrod, salt);
+    const hashPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
       fullName,
       email,
-      passwrod: hashPassword,
+      password: hashPassword,
       bio,
     });
-    const token = generateToken(newUser);
+    const token = generateToken(newUser._id);
     res.json({
-      succes: true,
+      success: true,
       userData: newUser,
       token,
-      mesaage: "Account created successfully",
+      message: "Account created successfully",
     });
-  } catch (eror) {
-    console.log(error.message);
-    res.json({ succes: false, message: error.message });
-  }
+} catch (error) {
+  console.log("REQUEST BODY:", req.body);
+  console.log("FULL ERROR:", error);        // ⬅️ زيد هادي
+  console.log("ERROR MESSAGE:", error.message); // ⬅️ وهادي
+  res.json({ success: false, message: error.message });
+}
 };
 
 // Login
 
-export const Login = async (req, res) => {
+export const login = async (req, res) => {
   try {
-    const { email, passwrod } = req.body;
+    const { email, password } = req.body;
     const userData = await User.findOne({ email });
 
-    const isPasswordCorrect = await bcrypt.compare(passwrod, userData.passwrod);
+    if (!userData) {
+      return res.json({ success: false, message: "Invalid credentials" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, userData.password);
 
     if (!isPasswordCorrect) {
-      return res.json({ succes: false, mesage: "Invalid credentials" });
+      return res.json({ success: false, message: "Invalid credentials" });
     }
     const token = generateToken(userData._id);
-    res.json({ succes: true, userData, token, mesaage: "Login successfully" });
-  } catch (eror) {
+    res.json({ success: true, userData, token, message: "Login successfully" });
+  } catch (error) {
     console.log(error.message);
-    res.json({ succes: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
-//Controller to update user  profile details
-export const updateProlfile = async (req, res) => {
+// Controller to update user profile details
+export const updateProfile = async (req, res) => {
   try {
     const { profilePic, bio, fullName } = req.body;
     const userId = req.user._id;
     let updateUser;
 
     if (!profilePic) {
-      updateuser = await User.findByIdUdpate(
+      updateUser = await User.findByIdAndUpdate(
         userId,
         { bio, fullName },
         { new: true },
@@ -75,24 +79,15 @@ export const updateProlfile = async (req, res) => {
     } else {
       const upload = await cloudinary.uploader.upload(profilePic);
 
-      updateUser = await User.findByIdAndUdpate(
+      updateUser = await User.findByIdAndUpdate(
         userId,
         { profilePic: upload.secure_url, bio, fullName },
         { new: true },
       );
     }
-    res.json({ succes: true, user: updateUser });
+    res.json({ success: true, user: updateUser });
   } catch (error) {
-    console.log(error.mesaage);
-    res.json({ succes: false, mesaage: error.mesaage });
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
   }
 };
-
-
-
-
-
-
-
-
-

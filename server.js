@@ -19,8 +19,11 @@ export const io = new Server(server , {
 //store online users
 export const userSocketMap = {};//{userId : socketId}
 //Socket.io connection handler
-io.on("connetion",(socket)=>{
+/*
+io.on("connection",(socket)=>{
+
     const userId = socket.handshake.query.userId;
+     
     console.log("User connected",userId);
     if(userId) userSocketMap[userId] = socket.id;
 
@@ -28,6 +31,7 @@ io.on("connetion",(socket)=>{
     io.emit("getOnlineUsers",Object.keys(userSocketMap));
     // user disconnet 
     socket.on("disconnect",()=>{
+       
         console.log("User Disconnected",userId);
         delete userSocketMap[userId];
         io.emit("getOnlinUsers",Object.keys(userSocketMap))
@@ -35,15 +39,42 @@ io.on("connetion",(socket)=>{
 
     
 })
+    */
+   io.on("connection", (socket) => {
+    console.log("SOCKET QUERY:", socket.handshake.query);
+
+    const userId = socket.handshake.query.userId;
+
+    console.log("USER ID:", userId);
+
+    if (userId) {
+        userSocketMap[userId] = socket.id;
+    }
+
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    socket.on("disconnect", () => {
+        console.log("User Disconnected", userId);
+
+        delete userSocketMap[userId];
+
+        io.emit(
+            "getOnlineUsers",
+            Object.keys(userSocketMap)
+        );
+    });
+});
 
 //MIddleware setup
-app.use(express.json({ limit: "4mb " }));
+app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 
 //Routes setup
 app.use("/api/status", (req, res) => res.send("server is live"));
 app.use("/api/auth", userRouter);
 app.use("/api/messages",messageRouter);
+
+
 
 //connection to db
 await connectDB();
