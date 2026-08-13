@@ -1,6 +1,7 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import  cloudinary from "../lib/cloudinary.js";
 
 // signup a new user
 
@@ -65,8 +66,10 @@ export const login = async (req, res) => {
 
 // Controller to update user profile details
 export const updateProfile = async (req, res) => {
+   
   try {
     const { profilePic, bio, fullName } = req.body;
+  
     const userId = req.user._id;
     let updateUser;
 
