@@ -47,10 +47,10 @@ export const getMessages = async (req, res) => {
       { senderId: selectdUserId, receiverId: myId },
       { seen: true },
     );
-    res.json({ sucess: true, messages });
-  } catch {
+    res.json({ success: true, messages });
+  } catch (error ){
     console.log(error.message);
-    res.json({ sucess: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -80,7 +80,7 @@ export const sendmessage = async(req,res) =>{
       imageUrl = uploadResponse.secure_url;
     
   }
-  const newMessage = await Messages.create({
+  const newMessage = await Message.create({
     senderId,
     receiverId,
     text,
@@ -98,8 +98,12 @@ if (reciverSocketId){
   res.json({success: true , newMessage});
 
 }catch (error) {
-    console.log(error.message);
-    res.json({ success: false, mesaage: error.mesaage });
-  }
+  console.log(error.message);
+
+  res.json({
+    success: false,
+    message: error.message,
+  });
+}
 };
 
