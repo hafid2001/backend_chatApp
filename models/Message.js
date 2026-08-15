@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { timeStamps } from "node:console";
-import { receiveMessageOnPort } from "node:worker_threads";
+import { timeStamp } from "node:console";
+
 
 const MessageSchema = new mongoose.Schema(
   {
@@ -18,7 +18,7 @@ const MessageSchema = new mongoose.Schema(
     image: { type: String },
     seen: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  { timestamp: true },
 );
 
 const Message = mongoose.model("Message", MessageSchema);
